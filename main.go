@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	v1reflection "moul.io/grpcbin/handler/grpcbin/reflection/v1"
+	v1alphareflection "moul.io/grpcbin/handler/grpcbin/reflection/v1alpha"
 	"net"
 	"net/http"
 	"os"
@@ -15,14 +17,12 @@ import (
 
 	"golang.org/x/crypto/acme/autocert"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/reflection"
-
 	abepb "github.com/grpc-ecosystem/grpc-gateway/examples/proto/examplepb"
 	addsvcpb "github.com/moul/pb/addsvc/go-grpc"
 	grpcbinpb "github.com/moul/pb/grpcbin/go-grpc"
 	hellopb "github.com/moul/pb/hello/go-grpc"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	abehandler "github.com/grpc-ecosystem/grpc-gateway/examples/server"
 	addsvchandler "moul.io/grpcbin/handler/addsvc"
@@ -126,7 +126,8 @@ func main() {
 		addsvcpb.RegisterAddServer(s, &addsvchandler.Handler{})
 		abepb.RegisterABitOfEverythingServiceServer(s, abehandler.NewHandler())
 		// register reflection service on gRPC server
-		reflection.Register(s)
+		v1reflection.Register(s)
+		v1alphareflection.Register(s)
 
 		// serve
 		log.Printf("listening on %s (insecure gRPC)\n", *insecureAddr)
@@ -173,7 +174,9 @@ func main() {
 		addsvcpb.RegisterAddServer(s, &addsvchandler.Handler{})
 		abepb.RegisterABitOfEverythingServiceServer(s, abehandler.NewHandler())
 		// register reflection service on gRPC server
-		reflection.Register(s)
+		//reflection.Register(s)
+		v1reflection.Register(s)
+		v1alphareflection.Register(s)
 
 		// initilaize HTTP routing based on production/development environment
 		if *inProduction {
